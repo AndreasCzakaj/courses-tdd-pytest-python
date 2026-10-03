@@ -1,0 +1,20 @@
+[project]
+name = "tdd-pytest-python"
+version = "1.0.0"
+description = "TDD training course: pytest basics (matchers, fibonacci)"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+# production code lives in src/, test code in tests/
+pythonpath = ["src"]
+testpaths = ["tests"]
+# -ra: print the reasons for skipped / failed tests in the summary
+addopts = "-ra"
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+
+[tool.pytest-watcher]
+now = true
+clear = true
