@@ -46,10 +46,12 @@ src/                    production code
   hello.py
   matchers/
   fibonacci/
+  funwithflags/           "Fun With Flags": decorator pattern
 tests/                  test code, files must be named test_*.py
   test_hello.py
   matchers/
   fibonacci/
+  funwithflags/
 pyproject.toml          pytest configuration
 requirements.txt        dependencies
 ```
