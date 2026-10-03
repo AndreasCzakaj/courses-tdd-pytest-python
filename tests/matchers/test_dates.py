@@ -42,137 +42,121 @@ def project_deadline(sut) -> date:
 
 
 # date assertions
-@pytest.mark.skip(reason="birthday should be 1990-05-15")
 def test_should_be_1990_05_15(birthday):
-    pass
+    assert birthday == date(1990, 5, 15)
 
 
-@pytest.mark.skip(reason="birthday should be before today")
 def test_should_be_before_today(birthday):
-    pass
+    assert birthday < date.today()
 
 
-@pytest.mark.skip(reason="birthday should be after 1980-01-01")
 def test_should_be_after_1980_01_01(birthday):
-    pass
+    assert birthday > date(1980, 1, 1)
 
 
-@pytest.mark.skip(reason="birthday should be in May")
 def test_should_be_in_may(birthday):
-    pass
+    assert birthday.month == 5
 
 
-@pytest.mark.skip(reason="birthday should be in year 1990")
 def test_should_be_in_year_1990(birthday):
-    pass
+    assert birthday.year == 1990
 
 
-@pytest.mark.skip(reason="birthday should be on day 15")
 def test_should_be_on_day_15(birthday):
-    pass
+    assert birthday.day == 15
 
 
-@pytest.mark.skip(reason="project deadline should be in the future compared to 2024-01-01")
 def test_project_deadline_should_be_in_future(project_deadline):
-    pass
+    assert project_deadline > date(2024, 1, 1)
 
 
-@pytest.mark.skip(reason="project deadline should be between 2024-01-01 and 2025-12-31")
 def test_project_deadline_should_be_between_dates(project_deadline):
-    pass
+    assert date(2024, 1, 1) <= project_deadline <= date(2025, 12, 31)
 
 
 # datetime assertions (naive, i.e. without time zone)
-@pytest.mark.skip(reason="meeting time should be 2024-03-20T14:30:00")
 def test_meeting_time_should_be_2024_03_20_at_14_30(meeting_time):
-    pass
+    assert meeting_time == datetime(2024, 3, 20, 14, 30, 0)
 
 
-@pytest.mark.skip(reason="meeting time should be before now")
 def test_meeting_time_should_be_before_now(meeting_time):
-    pass
+    assert meeting_time < datetime.now()
 
 
-@pytest.mark.skip(reason="meeting time should have hour 14")
 def test_meeting_time_should_have_hour_14(meeting_time):
-    pass
+    assert meeting_time.hour == 14
 
 
-@pytest.mark.skip(reason="meeting time should have minute 30")
 def test_meeting_time_should_have_minute_30(meeting_time):
-    pass
+    assert meeting_time.minute == 30
 
 
-@pytest.mark.skip(reason="meeting time should be in March 2024")
 def test_meeting_time_should_be_in_march_2024(meeting_time):
-    pass
+    assert (meeting_time.year, meeting_time.month) == (2024, 3)
 
 
 # time assertions
-@pytest.mark.skip(reason="work start should be 09:00")
 def test_work_start_should_be_09_00(work_start):
-    pass
+    assert work_start == time(9, 0)
 
 
-@pytest.mark.skip(reason="work start should be before noon (12:00)")
 def test_work_start_should_be_before_noon(work_start):
-    pass
+    assert work_start < time(12, 0)
 
 
-@pytest.mark.skip(reason="work start should have hour 9")
 def test_work_start_should_have_hour_9(work_start):
-    pass
+    assert work_start.hour == 9
 
 
-@pytest.mark.skip(reason="work start should be between 08:00 and 10:00")
 def test_work_start_should_be_between_08_and_10(work_start):
-    pass
+    assert time(8, 0) <= work_start <= time(10, 0)
 
 
 # datetime assertions (aware, i.e. with time zone)
-@pytest.mark.skip(reason="conference start should be in Europe/Berlin timezone")
 def test_conference_start_should_be_in_berlin_timezone(conference_start):
-    pass
+    assert conference_start.tzinfo == ZoneInfo("Europe/Berlin")
 
 
-@pytest.mark.skip(reason="conference start should be 2024-06-01T09:00 in Berlin")
 def test_conference_start_should_be_correct_date_time(conference_start):
-    pass
+    assert conference_start == datetime(2024, 6, 1, 9, 0, 0, tzinfo=ZoneInfo("Europe/Berlin"))
+    # aware datetimes are compared as points in time: 09:00 in Berlin is 07:00 UTC in summer
+    assert conference_start == datetime(2024, 6, 1, 7, 0, 0, tzinfo=timezone.utc)
 
 
-@pytest.mark.skip(reason="conference start should have UTC offset +01:00 or +02:00")
 def test_conference_start_should_have_european_offset(conference_start):
-    pass
+    assert conference_start.utcoffset() in (timedelta(hours=1), timedelta(hours=2))
 
 
 # timestamp assertions (UTC)
-@pytest.mark.skip(reason="event timestamp should be 2024-01-15T10:30:00Z")
 def test_event_timestamp_should_be_correct(event_timestamp):
-    pass
+    assert event_timestamp == datetime.fromisoformat("2024-01-15T10:30:00+00:00")
 
 
-@pytest.mark.skip(reason="event timestamp should be before now")
 def test_event_timestamp_should_be_in_past(event_timestamp):
-    pass
+    assert event_timestamp < datetime.now(timezone.utc)
 
 
-@pytest.mark.skip(reason="event timestamp should be close to 2024-01-15T10:30:00Z within 1 second")
 def test_event_timestamp_should_be_close_to_expected(event_timestamp):
-    pass
+    expected = datetime(2024, 1, 15, 10, 30, 0, tzinfo=timezone.utc)
+    assert abs(event_timestamp - expected) <= timedelta(seconds=1)
+    # alternative: `pytest.approx` supports numbers (not datetimes) => compare the timestamps
+    assert event_timestamp.timestamp() == pytest.approx(expected.timestamp(), abs=1)
 
 
 # Advanced: timedelta
-@pytest.mark.skip(reason="birthday should be more than 30 years before today")
 def test_birthday_should_be_more_than_30_years_ago(birthday):
-    pass
+    today = date.today()
+    assert birthday < today.replace(year=today.year - 30)
 
 
-@pytest.mark.skip(reason="meeting time should be at least 2 hours after 12:00 same day")
 def test_meeting_should_be_at_least_2_hours_after_noon(meeting_time):
-    pass
+    noon = meeting_time.replace(hour=12, minute=0, second=0)
+    duration = meeting_time - noon
+    assert duration >= timedelta(hours=2)
 
 
 # Combined assertions
-@pytest.mark.skip(reason="TODO: combine multiple date assertions in one test")
 def test_should_combine_multiple_date_assertions(birthday):
-    pass
+    assert date(1980, 1, 1) < birthday < date.today()
+    assert birthday == date(1990, 5, 15)
+    assert (birthday.year, birthday.month, birthday.day) == (1990, 5, 15)

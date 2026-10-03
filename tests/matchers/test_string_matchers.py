@@ -11,51 +11,73 @@ def email() -> str:
     return First().get_email()
 
 
-@pytest.mark.skip(reason="email should not be None")
 def test_should_not_be_none(email):
-    pass
+    assert email is not None
 
 
-@pytest.mark.skip(reason="email should be a string")
 def test_should_be_a_string(email):
-    pass
+    assert isinstance(email, str)
 
 
-@pytest.mark.skip(reason="email should be andreas.czakaj@binary-stars.eu")
 def test_should_be_andreas_czakaj(email):
-    pass
+    assert email == "andreas.czakaj@binary-stars.eu"
+    # ignoring case
+    assert email.casefold() == "ANDREAS.czakaj@binary-stars.eu".casefold()
 
 
-@pytest.mark.skip(reason="email should start with 'andreas'")
 def test_should_start_with_andreas(email):
-    pass
+    assert email.startswith("andreas")
 
 
-@pytest.mark.skip(reason="email should end with '.eu'")
 def test_should_end_with_dot_eu(email):
-    pass
+    assert email.endswith(".eu")
 
 
-@pytest.mark.skip(reason="email should not end with '.com'")
 def test_should_not_end_with_dot_com(email):
-    pass
+    assert not email.endswith(".com")
 
 
-@pytest.mark.skip(reason="email should contain 'binary'")
 def test_should_contain_binary(email):
-    pass
+    assert "binary" in email
 
 
-@pytest.mark.skip(reason="email should contain 'andreas' and 'stars'")
 def test_should_contain_andreas_and_stars(email):
-    pass
+    assert "andreas" in email and "stars" in email
+    # alternative: scales better and still is 1 expression
+    assert all(part in email for part in ("andreas", "stars"))
 
 
-@pytest.mark.skip(reason="email should match regular expression '[a-z.@\\-]+'")
 def test_should_match_regex(email):
-    pass
+    # the 2nd arg of `assert` is the message, like AssertJ's `.as(...)`
+    assert re.fullmatch(r"[0-9a-z.@\-]+", email), "it should match super simplistic reg exp"
 
 
-@pytest.mark.skip(reason="TODO: all of the above in 1 test ... and try not to exit at the 1st failure")
 def test_should_match_all_in_one(email):
-    pass
+    # conditions can be combined with `and`
+    # ... however, the test will stop at the first error
+    assert (
+        email is not None
+        and email == "andreas.czakaj@binary-stars.eu"
+        and email.startswith("andreas")
+        and email.endswith(".eu")
+        and not email.endswith(".com")
+        and "binary" in email
+        and re.fullmatch(r"[0-9a-z.@\-]+", email)
+    )
+
+    # to prevent this, you can use "soft assertions" from the plugin `pytest-check`:
+    # all checks are executed, all failures are reported
+    with check:
+        assert email is not None
+    with check:
+        assert email == "andreas.czakaj@binary-stars.eu"
+    with check:
+        assert email.startswith("andreas")
+    with check:
+        assert email.endswith(".eu")
+    with check:
+        assert not email.endswith(".com")
+    with check:
+        assert "binary" in email
+    with check:
+        assert re.fullmatch(r"[0-9a-z.@\-]+", email)
