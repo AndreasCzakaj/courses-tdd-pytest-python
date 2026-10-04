@@ -7,3 +7,5 @@ htmlcov/
 coverage.xml
 .idea/
 .vscode/
+.ruff_cache/
+report.xml
