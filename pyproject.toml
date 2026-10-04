@@ -32,6 +32,10 @@ select = ["E", "W", "F", "I", "B", "C90"]
 # break the build for functions with a CCN above 5
 max-complexity = 5
 
+[tool.ruff.lint.isort]
+# test helper modules that live next to the tests
+known-first-party = ["fibonacci_contract"]
+
 [tool.ruff.lint.per-file-ignores]
 # the exercises come with unused imports and variables: they are hints for the solution
 "tests/**" = ["F401", "F841"]
