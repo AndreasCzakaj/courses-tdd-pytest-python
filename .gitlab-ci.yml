@@ -1,0 +1,78 @@
+# GitLab CI/CD pipeline: lint -> test -> package
+# Every stage must be green before the next one starts.
+
+stages:
+  - lint
+  - test
+  - package
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  IMAGE_NAME: "tdd-pytest-python"
+
+# shared by the Python jobs
+.python:
+  image: python:3.12-slim
+  cache:
+    paths:
+      - .cache/pip
+  before_script:
+    - python --version
+    - pip install -r requirements.txt
+
+# Linter + metrics: code style, likely bugs, import order, cyclomatic complexity (CCN <= 5)
+# The rules are configured in pyproject.toml. Any violation breaks the build.
+lint:
+  extends: .python
+  stage: lint
+  script:
+    - ruff check .
+
+# All tests, with coverage. Less than 90% coverage breaks the build.
+test:
+  extends: .python
+  stage: test
+  script:
+    - >
+      pytest
+      --cov --cov-report=term --cov-report=xml:coverage.xml
+      --cov-fail-under=90
+      --junitxml=report.xml
+  # GitLab reads the total coverage from the job log ...
+  coverage: '/TOTAL.*\s(\d+(?:\.\d+)?)%/'
+  artifacts:
+    when: always
+    reports:
+      # ... shows the test results in the merge request ...
+      junit: report.xml
+      # ... and the covered lines in the diff
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+
+# Build the Docker image of the "app" and check that it starts.
+# Needs a runner that supports Docker-in-Docker (gitlab.com: works out of the box).
+docker:
+  stage: package
+  image: docker:27
+  services:
+    - docker:27-dind
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  script:
+    - docker build -f Dockerfile.app -t "$IMAGE_NAME:$CI_COMMIT_SHORT_SHA" .
+    # smoke test: the container must start and print a UUID
+    - docker run --rm "$IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
+    # Push the image to Docker Hub.
+    # To enable: define DOCKERHUB_USER and DOCKERHUB_TOKEN (masked!) in
+    # Settings > CI/CD > Variables, then remove the comments.
+    # NEVER put the token into this file.
+    # - echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USER" --password-stdin
+    # - docker tag "$IMAGE_NAME:$CI_COMMIT_SHORT_SHA" "$DOCKERHUB_USER/$IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
+    # - docker tag "$IMAGE_NAME:$CI_COMMIT_SHORT_SHA" "$DOCKERHUB_USER/$IMAGE_NAME:latest"
+    # - docker push "$DOCKERHUB_USER/$IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
+    # - docker push "$DOCKERHUB_USER/$IMAGE_NAME:latest"
+  # only build images from the default branch and the solution branch
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH == "solution"

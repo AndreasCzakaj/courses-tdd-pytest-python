@@ -39,6 +39,32 @@ pytest -k "starts_with"                     # by name
 pytest -v                                   # verbose: 1 line per test
 ```
 
+## Lint: code style, likely bugs, cyclomatic complexity
+
+``` Bash
+ruff check .
+```
+
+# CI/CD
+
+`.gitlab-ci.yml` defines the GitLab pipeline: lint => test => package
+
+* **lint**: `ruff check .`, any violation breaks the build (rules: `pyproject.toml`)
+* **test**: all tests with coverage, less than 90% breaks the build
+* **package**: builds the Docker image of the "app" (`Dockerfile.app`), which prints a UUID
+
+On branch `main`, the pipeline is RED by design: the first test must fail.
+On branch `solution` it is GREEN.
+
+Run the steps locally:
+
+``` Bash
+ruff check .
+pytest --cov --cov-fail-under=90
+docker build -f Dockerfile.app -t tdd-pytest-python .
+docker run --rm tdd-pytest-python
+```
+
 # Folder structure
 
 ```
@@ -52,6 +78,8 @@ tests/                  test code, files must be named test_*.py
   matchers/
   fibonacci/
   funwithflags/
-pyproject.toml          pytest configuration
+pyproject.toml          configuration of pytest, coverage, ruff
+.gitlab-ci.yml          CI/CD pipeline
+Dockerfile.app          Docker image of the "app"
 requirements.txt        dependencies
 ```

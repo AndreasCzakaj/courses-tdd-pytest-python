@@ -13,8 +13,10 @@ base_impl = UuidGeneratorNaiveRandomImpl()
     [
         pytest.param(base_impl, "[a-f0-9]{32}", id="lower case, no dashes"),
         # pytest.param(???, "[A-F0-9]{32}", id="upper case, no dashes"),
-        # pytest.param(???, "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}", id="lower case, with dashes"),
-        # pytest.param(???, "[A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12}", id="upper case, with dashes"),
+        # pytest.param(
+        #     ???, "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}", id="lower case, with dashes"),
+        # pytest.param(
+        #     ???, "[A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12}", id="upper case, with dashes"),
     ],
 )
 def test_should_create_a_uuid_in_the_matching_format(uuid_generator: UuidGenerator, expected_regex: str):

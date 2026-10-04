@@ -18,3 +18,20 @@ branch = true
 [tool.pytest-watcher]
 now = true
 clear = true
+
+[tool.ruff]
+line-length = 120
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+# E, W: code style / F: pyflakes (real bugs) / I: import order / B: bugbear (likely bugs)
+# C90: cyclomatic complexity (CCN)
+select = ["E", "W", "F", "I", "B", "C90"]
+
+[tool.ruff.lint.mccabe]
+# break the build for functions with a CCN above 5
+max-complexity = 5
+
+[tool.ruff.lint.per-file-ignores]
+# the exercises come with unused imports and variables: they are hints for the solution
+"tests/**" = ["F401", "F841"]
