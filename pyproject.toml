@@ -14,6 +14,8 @@ addopts = "-ra"
 [tool.coverage.run]
 source = ["src"]
 branch = true
+# starts the user self service for local use, not part of the app
+omit = ["src/uss/__main__.py"]
 
 [tool.pytest-watcher]
 now = true
@@ -34,7 +36,7 @@ max-complexity = 5
 
 [tool.ruff.lint.isort]
 # test helper modules that live next to the tests
-known-first-party = ["fibonacci_contract"]
+known-first-party = ["fibonacci_contract", "uss_creators"]
 
 [tool.ruff.lint.per-file-ignores]
 # the exercises come with unused imports and variables: they are hints for the solution
